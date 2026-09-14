@@ -67,3 +67,6 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+days/.gitkeep
+notes/.gitkeep
+days/.gitkeep
