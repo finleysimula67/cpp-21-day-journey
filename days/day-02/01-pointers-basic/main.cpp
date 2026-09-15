@@ -15,7 +15,7 @@ int main()
 
     int &ref = value;
 
-    cout << "Vlaue through reference: " << ref << endl;
+    cout << "Value through reference: " << ref << endl;
 
     *ptr = 20;
 
