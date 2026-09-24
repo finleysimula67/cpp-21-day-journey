@@ -1,0 +1,2 @@
+An explicit copy constructor is a copy constructor that you write yourself to define
+exactly how a new object copies data from an existing object.
