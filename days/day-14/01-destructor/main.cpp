@@ -36,5 +36,7 @@ int main()
     std::cout << "b1: " << *b1.data << '\n';
     std::cout << "b2: " << *b2.data << '\n';
 
+    std
+
     return 0;
 }
