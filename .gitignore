@@ -70,3 +70,5 @@ Testing/
 days/.gitkeep
 notes/.gitkeep
 days/.gitkeep
+# C++ build artifacts
+cmake-build-*/
