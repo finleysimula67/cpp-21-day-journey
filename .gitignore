@@ -72,3 +72,4 @@ notes/.gitkeep
 days/.gitkeep
 # C++ build artifacts
 cmake-build-*/
+days/day-18-move-semantics/03-task-manager-ownership/comparing-run-time-with-python/main.py
