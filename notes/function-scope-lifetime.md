@@ -1,581 +1,87 @@
-````markdown
-# Day 4 — Functions and Function Parameters
+# Day 04 — Function Parameters
 
-## 1. Functions in C++
+## Objective
 
-A function has:
+Understand how C++ passes data to functions and how the choice of parameter type affects copying, modification, and memory access.
 
-- Return type
-- Name
-- Parameters
-- Function body
+## Core Concepts
 
-Example:
+### 1. Pass by Value
+
+The function receives a copy of the argument. Changes to the parameter do not affect the original variable.
 
 ```cpp
-int add(int a, int b)
+void changeValue(int number)
 {
-    return a + b;
-}
-````
-
-A function allows us to organize code into reusable pieces.
-
----
-
-## 2. Function Parameters
-
-C++ provides different ways to pass data to a function.
-
-The three important forms are:
-
-```text
-T value
-   ↓
-COPY
-
-T& value
-   ↓
-REFERENCE / SAME OBJECT
-
-T* value
-   ↓
-POINTER / ADDRESS
-```
-
----
-
-## 2.1 Pass by Value
-
-When a parameter is written normally:
-
-```cpp
-void change(int value)
-{
-    value = 500;
+    number = 100;
 }
 ```
 
-The function receives a **copy** of the argument.
+### 2. Pass by Reference
 
-Conceptually:
-
-```text
-Original object
-┌──────────┐
-│ value=10 │
-└──────────┘
-      │
-      │ copy
-      ↓
-Function parameter
-┌──────────┐
-│ value=10 │
-└──────────┘
-
-Two separate objects.
-
-Changing the function's value
-does NOT change the original.
-```
-
-Example:
+The parameter becomes an alias for the original variable. Changes affect the caller's variable.
 
 ```cpp
-#include <iostream>
-
-void change(int value)
+void changeValue(int& number)
 {
-    value = 500;
-}
-
-int main()
-{
-    int value = 10;
-
-    change(value);
-
-    std::cout << value << '\n';
-
-    return 0;
+    number = 100;
 }
 ```
 
-Output:
+### 3. Pass by Pointer
 
-```text
-10
-```
-
-The function changed its own copy, not the original object.
-
----
-
-## 2.2 Pass by Reference
-
-When `&` is used:
+The function receives a pointer containing an address. It can access or modify the original object through that pointer.
 
 ```cpp
-void change(int& value)
+void changeValue(int* number)
 {
-    value = 500;
+    if (number != nullptr)
+    {
+        *number = 100;
+    }
 }
 ```
 
-The parameter refers to the **original object**.
+### 4. Pass by Const Reference
 
-Conceptually:
-
-```text
-Original object
-┌──────────┐
-│ value=10 │
-└──────────┘
-      ↑
-      │
-   reference
-      │
-Function parameter
-
-Both names refer to the SAME object.
-
-Changing the function's value
-changes the original object.
-```
-
-Example:
+The function can access the original object without copying it, but cannot modify it through that reference.
 
 ```cpp
-#include <iostream>
-
-void change(int& value)
+void display(const std::string& name)
 {
-    value = 500;
-}
-
-int main()
-{
-    int value = 10;
-
-    change(value);
-
-    std::cout << value << '\n';
-
-    return 0;
+    std::cout << name << '\n';
 }
 ```
 
-Output:
+This is useful for reading larger objects without unnecessary copying.
 
-```text
-500
-```
+## Java Comparison
 
-The reference allows the function to modify the original object.
+| C++ | General idea |
+|---|---|
+| Pass by value | A copy of the argument is passed |
+| Pass by reference | An alias to the original object |
+| Pass by pointer | An address is passed explicitly |
+| Pass by const reference | Read-only access through an alias |
 
----
+Java also passes arguments by value. For object arguments, the copied value is the reference, so a method can modify the referenced object's state but cannot replace the caller's reference itself.
 
-## 2.3 Pass by Pointer
+## Key Takeaways
 
-When a pointer is used:
+- Value parameters are independent copies.
+- Reference parameters alias existing objects.
+- Pointer parameters provide explicit address-based access.
+- Const references provide read-only access without copying the object.
+- A function's parameter type communicates how it intends to use its input.
 
-```cpp
-void change(int* value)
-{
-    *value = 500;
-}
-```
+## Practice
 
-The function receives an **address**.
+1. Write a function that doubles an integer using pass by value.
+2. Rewrite it using pass by reference and observe the difference.
+3. Write a pointer-based version with a null check.
+4. Write a function that prints a string using `const std::string&`.
+5. Explain why changing a value parameter does not change the caller's variable.
 
-Example call:
+## Completion Criteria
 
-```cpp
-int value = 10;
-
-change(&value);
-```
-
-`&value` gives the address of `value`.
-
-Conceptually:
-
-```text
-Pointer
-┌──────────────┐
-│   address    │
-└──────────────┘
-       │
-       │ points to
-       ↓
-Original object
-┌──────────┐
-│ value=10 │
-└──────────┘
-
-The pointer stores the object's address.
-
-*pointer → accesses the object at that address.
-```
-
-Example:
-
-```cpp
-#include <iostream>
-
-void change(int* value)
-{
-    *value = 500;
-}
-
-int main()
-{
-    int value = 10;
-
-    change(&value);
-
-    std::cout << value << '\n';
-
-    return 0;
-}
-```
-
-Output:
-
-```text
-500
-```
-
-The pointer allows the function to access and modify the original object through its address.
-
----
-
-# 3. Comparing the Three
-
-| Parameter  | What it receives    | Modifies original? |
-| ---------- | ------------------- | ------------------ |
-| `T value`  | Copy                | No                 |
-| `T& value` | Reference to object | Yes                |
-| `T* value` | Address of object   | Yes, through `*`   |
-
-Quick mental model:
-
-```text
-T value
-   ↓
-COPY
-
-T& value
-   ↓
-ALIAS / SAME OBJECT
-
-T* value
-   ↓
-ADDRESS / POINTER
-```
-
----
-
-# 4. Understanding Addresses
-
-We can use addresses to prove the difference between pass by value, reference, and pointer.
-
-Example:
-
-```cpp
-void changeByValue(int value)
-{
-    std::cout << &value << '\n';
-}
-
-void changeByReference(int& value)
-{
-    std::cout << &value << '\n';
-}
-```
-
-In `main()`:
-
-```cpp
-int value = 10;
-
-std::cout << &value << '\n';
-
-changeByValue(value);
-
-changeByReference(value);
-```
-
-Conceptually:
-
-```text
-Pass by Value:
-
-main object      → 0xABC
-function object  → 0xDEF
-
-Different addresses
-→ different objects
-→ a copy was made
-```
-
-```text
-Pass by Reference:
-
-main object      → 0xABC
-function parameter → 0xABC
-
-Same address
-→ same object
-→ no separate int object
-```
-
----
-
-# 5. Understanding Pointers
-
-Suppose:
-
-```cpp
-int value = 10;
-
-int* ptr = &value;
-```
-
-Then:
-
-```text
-value
-  ↓
-actual object
-
-&value
-  ↓
-address of the object
-
-ptr
-  ↓
-address stored inside the pointer
-
-*ptr
-  ↓
-object/value at that address
-```
-
-Example:
-
-```cpp
-std::cout << &value << '\n';
-std::cout << ptr << '\n';
-std::cout << *ptr << '\n';
-```
-
-These represent:
-
-```text
-&value → address of the original object
-
-ptr    → address stored in the pointer
-
-*ptr   → value/object being pointed to
-```
-
----
-
-## 5.1 `&*pointer`
-
-This expression was also used during the experiment:
-
-```cpp
-&*value
-```
-
-Read it from the inside:
-
-```text
-value
-  ↓
-*value
-  ↓
-object being pointed to
-  ↓
-&(*value)
-  ↓
-address of that object
-```
-
-Therefore:
-
-```cpp
-&*value
-```
-
-gives the address of the object being pointed to.
-
-For learning purposes, this is useful for understanding how `*` and `&` relate to each other.
-
----
-
-# 6. Important Pointer Distinction
-
-Inside this function:
-
-```cpp
-void change(int* value)
-{
-}
-```
-
-`value` is itself a pointer variable.
-
-Therefore:
-
-```cpp
-value
-```
-
-means:
-
-> The address stored inside the pointer.
-
-While:
-
-```cpp
-&value
-```
-
-means:
-
-> The address of the pointer variable itself.
-
-And:
-
-```cpp
-*value
-```
-
-means:
-
-> The object located at the address stored in the pointer.
-
-So:
-
-```text
-value
-  ↓
-address stored in pointer
-
-&value
-  ↓
-address of pointer variable
-
-*value
-  ↓
-object being pointed to
-```
-
----
-
-# 7. Java Comparison
-
-In Java:
-
-```java
-void change(int value)
-{
-    value = 500;
-}
-```
-
-The primitive `int` is passed by value.
-
-C++ gives us more explicit control over how function parameters interact with objects:
-
-```cpp
-void change(int value);   // copy
-
-void change(int& value);  // reference
-
-void change(int* value);  // pointer
-```
-
-This becomes especially important when working with:
-
-* Object lifetime
-* Memory
-* Ownership
-* RAII
-* Smart pointers
-* Performance
-
----
-
-# 8. Scope vs Lifetime
-
-These are important C++ concepts that will be covered separately.
-
-```text
-Scope
-  ↓
-Where can I access the NAME?
-
-Lifetime
-  ↓
-How long does the OBJECT exist?
-```
-
-They are related, but they are not the same thing.
-
----
-
-# 9. Key Takeaways
-
-The most important mental model from Day 4 so far:
-
-```text
-T value
-   ↓
-COPY
-
-T& value
-   ↓
-ALIAS / SAME OBJECT
-
-T* value
-   ↓
-ADDRESS / POINTER
-```
-
-For pointers:
-
-```text
-value
-  ↓
-address stored in pointer
-
-*value
-  ↓
-object at that address
-
-&value
-  ↓
-address of the pointer variable
-```
-
-For references:
-
-```text
-reference
-  ↓
-another name for the same object
-```
-
-The important C++ question is not only:
-
-> "Does this code work?"
-
-Also ask:
-
-> "Am I working with a copy, the original object, or an address?"
-
-```
+Complete the exercises, compile the programs, and explain the differences between value, reference, pointer, and const-reference parameters without relying on memorized definitions.
